@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mikki Pet App</title> 
+
+<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
+<!-- see http://zimjs.com/templates for more templates and meta tags -->
+
+<script>var zon = true; // true for comments from zim code</script>
+<script src="http://d309knd7es5f10.cloudfront.net/zim_1.4.js"></script><!-- take off _min to see code -->
+<script src="http://code.createjs.com/createjs-2014.12.12.min.js"></script> 
+<!-- or can go to zimjs.com and createjs.com for individual modules -->
+
+<script src="mikkiView.js"></script>
+<!--<script src="mikkiController.js"></script>-->
+
+
+<style>
+	body {margin:0px; padding:0px; background-color:#000;}
+	#myCanvas {position:absolute; background-color:#D1A170;}
+</style>
+
+<script>
+
+// SCALING OPTIONS
+// "none"		sets canvas and stage to dimensions and does not scale if window changes
+// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"		sets canvas and stage to window size (canvas is actually set to screen size)
+
+var scaling = "full"; // full automatically sets width and height to window size
+var width = null;
+var height = null;
+var stage;
+var stageW;
+var stageH;
+
+
+var frame = new zim.Frame(scaling, width, height); 
+frame.on("ready", function() {	
+	zog("ready from ZIM Frame");
+	
+	stage = frame.stage;
+	stageW = frame.stageW;
+	stageH = frame.stageH;
+	
+	
+	var vLayoutManager = new zim.LayoutManager();
+	var gridManager = new zim.GridManager();
+	var guideManager = new zim.GuideManager();
+	
+	var vP = app.makeVerticalPages(vLayoutManager, gridManager, guideManager);
+
+	//stage.addChild(hP.main);
+	//stage.addChild(hP.info);
+	//hP.info.x = 100;
+	
+	
+	// left, right, up, down
+	var vPages = new zim.Pages(stage,[
+		{page:vP.main,  swipe:[vP.info, vP.info, null, null]},
+		{page:vP.info,  swipe:[vP.main, vP.main, null, null]}
+	], "slide", 500
+	);
+	stage.addChild(vPages);
+		
+	app.makeHotSpots(vP, vPages);
+	
+	vLayoutManager.dispose();
+	gridManager.dispose();
+	guideManager.dispose();
+
+	// put resizing code in here (scaling="full" only)
+	frame.on("resize", function(e) {
+		stageW = frame.stageW;
+		stageH = frame.stageH;
+		
+		//zim.scaleTo(hP.info, stage, 100, 100, "both");
+		//zim.scaleTo(vP.info, stage, 100, 100, "both");
+
+		vLayoutManager.resize();
+		gridManager.resize();
+		guideManager.resize();
+				
+		stage.update();
+	}); // end of resizing
+	
+	// put orientation change code in here
+	frame.on("orientation", orientate);
+
+	function orientate(e) {	
+	
+		zog(frame.orientation);	
+	
+		stage.update();
+	}; // end of orientation
+
+	orientate();
+	
+	stage.update();	
+	
+}); // end of ready
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>
